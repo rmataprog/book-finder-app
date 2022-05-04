@@ -1,0 +1,21 @@
+img.welcome {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 20vw;
+}
+
+.preloader-wrapper {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.preloader-wrapper.big {
+    width: 100px !important;
+    height: 100px !important;
+}
+
+.spinner-layer {
+    border-color: #6a1b9a;
+}
