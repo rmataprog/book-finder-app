@@ -1,6 +1,7 @@
 $(document).ready(function () {
 
     var BOOK_APP = {
+        pages: null,
         totalItems: null,
         searchTerm: null
     };
@@ -42,56 +43,101 @@ $(document).ready(function () {
             },
             success: function (data) {
                 console.log(data);
-                var $ul = $(`<ul class="collapsible"></ul>`);
-                data.items.forEach((book) => {
-                    var li_content = `<li>
-                        <div class="collapsible-header">
-                            ${book.volumeInfo.title}
-                        </div>
-                        <div class="collapsible-body">
-                            <span>Published date: ${book.volumeInfo.publishedDate}</span><br />
-                            <span>Description: ${book.volumeInfo.description}</span>
-                        </div>
-                        </li>`;
-                    $li = $(li_content);
-                    $li.appendTo($ul);
-                });
-                $ul.appendTo(`div.section:eq(2)`);
-                var elems = document.querySelectorAll('.collapsible');
-                var instances = M.Collapsible.init(elems);
-                BOOK_APP.totalItems = input.index === 0 ? data.totalItems : BOOK_APP.totalItems;
-                if(input.index === 0) {
-                    var onClick = function(e) {
-                        e.preventDefault();
-                        var target = e.target;
-                        if(target && target.tagName === 'A') {
-                            builder({
-                                query: BOOK_APP.searchTerm,
-                                index: parseInt(target.textContent)*10
-                            });
-                        };
-                    };
-
-                    $('ul.pagination').remove();
-
-                    $ulPag = $(`<ul class="pagination"></ul>`);
-
-                    var pages = Math.ceil(BOOK_APP.totalItems/10);
-
-                    for(var i = 1; i <= pages; i++) {
-                        $ulPag.append($(`<li class="waves-effect"><a>${i}</a></li>`));
-                    };
-
-                    $ulPag.click(function (e) { 
-                        onClick(e);
+                try {
+                    var $ul = $(`<ul class="collapsible"></ul>`);
+                    data.items.forEach((book) => {
+                        var li_content = `<li>
+                            <div class="collapsible-header">
+                                ${book.volumeInfo.title}
+                            </div>
+                            <div class="collapsible-body">
+                                <span>Published date: ${book.volumeInfo.publishedDate}</span><br />
+                                <span>Description: ${book.volumeInfo.description}</span>
+                            </div>
+                            </li>`;
+                        $li = $(li_content);
+                        $li.appendTo($ul);
                     });
+                    $ul.appendTo(`div.section:eq(2)`);
+                    var elems = document.querySelectorAll('.collapsible');
+                    var instances = M.Collapsible.init(elems);
+                    BOOK_APP.totalItems = input.index === 0 ? data.totalItems : BOOK_APP.totalItems;
+                    BOOK_APP.pages = Math.ceil(BOOK_APP.totalItems/10);
+                    if(input.index === 0) {
+                        var onClick = function(e) {
+                            e.preventDefault();
+                            var $target = $(e.target);
+                            if(e.target && ['A', 'I'].includes(e.target.tagName)) {
+                                if(['chevron_left', 'chevron_right'].includes($target.text())) {
+                                    if($target.text() === 'chevron_right' && $target.parent().parent().hasClass('disabled') === false) {
+                                        builder({
+                                            query: BOOK_APP.searchTerm,
+                                            index: (parseInt($('li.active').next().text()) - 1)*10
+                                        });
+                                        $('li.active').next().removeClass('waves-effect').addClass('active');
+                                        $('li.active:eq(0)').removeClass('active').addClass('waves-effect');
+                                    } else if ($target.text() === 'chevron_left' && $target.parent().parent().hasClass('disabled') === false) {
+                                        builder({
+                                            query: BOOK_APP.searchTerm,
+                                            index: (parseInt($('li.active').prev().text()) - 1)*10
+                                        });
+                                        $('li.active').prev().removeClass('waves-effect').addClass('active');
+                                        $('li.active:eq(1)').removeClass('active').addClass('waves-effect');
+                                    }
+                                } else {
+                                    $('li.active').removeClass('active').addClass('waves-effect');
+                                    $target.parent().removeClass('waves-effect').addClass('active');
+                                    builder({
+                                        query: BOOK_APP.searchTerm,
+                                        index: (parseInt($target.text()) - 1)*10
+                                    });
+                                }
 
-                    $ulPag.appendTo(`div.section:last`);
+                                if(parseInt($('li.active').text()) > 1) {
+                                    $('li:first').removeClass('disabled').addClass('waves-effect');
+                                } else {
+                                    $('li:first').addClass('disabled').removeClass('waves-effect');
+                                }
+
+                                if(parseInt($('li.active').text()) === BOOK_APP.pages) {
+                                    $('li:last').addClass('disabled').removeClass('waves-effect');
+                                } else {
+                                    $('li:last').removeClass('disabled').addClass('waves-effect');
+                                }
+                            };
+                        };
+
+                        $('ul.pagination').remove();
+
+                        $ulPag = $(`<ul class="pagination"></ul>`);
+
+                        $ulPag.append($(`<li class="disabled"><a><i class="material-icons">chevron_left</i></a></li>`));
+
+                        for(var i = 1; i <= BOOK_APP.pages; i++) {
+                            if(i === 1) {
+                                $ulPag.append($(`<li class="active"><a>${i}</a></li>`));
+                            } else {
+                                $ulPag.append($(`<li class="waves-effect"><a>${i}</a></li>`));
+                            }
+                        };
+
+                        $ulPag.append($(`<li class="waves-effect"><a><i class="material-icons">chevron_right</i></a></li>`));
+
+                        $ulPag.click(function (e) { 
+                            onClick(e);
+                        });
+
+                        $ulPag.appendTo(`div.section:last`);
+                    }
+                } catch (e) {
+                    console.log(`name: ${e.name} - message: ${e.message}`);
+                    $p = $(`<p class="error red-text text-darken-2 center-align">There was an error getting the information: name: ${e.name} - message: ${e.message}</p>`);
+                    $p.appendTo(`div.section:eq(2)`);
                 }
             },
             error: function(err) {
                 $p = $(`<p class="error red-text text-darken-2 center-align">There was an error getting the information: ${err.statusText}</p>`);
-                $p.appendTo(`div.section:last`);
+                $p.appendTo(`div.section:eq(2)`);
             }
         });
     }
