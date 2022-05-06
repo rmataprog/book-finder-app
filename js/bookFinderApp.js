@@ -104,6 +104,22 @@ $(document).ready(function () {
                                 } else {
                                     $('li:last').removeClass('disabled').addClass('waves-effect');
                                 }
+
+                                if(parseInt($('li.active').text()) > 5 && parseInt($('li.active').text()) < ($('ul.pagination').children().length - 5)) {
+                                    $('ul.pagination li').not('li:first').not('li:last').each(function () {
+                                        $(this).hide();
+                                    });
+
+                                    $('li.active').show();
+                                    $('li.active').next().show();
+                                    $('li.active').next().next().show();
+                                    $('li.active').next().next().next().show();
+                                    $('li.active').next().next().next().next().show();
+                                    $('li.active').prev().show();
+                                    $('li.active').prev().prev().show();
+                                    $('li.active').prev().prev().prev().show();
+                                    $('li.active').prev().prev().prev().prev().show();
+                                }
                             };
                         };
 
@@ -122,6 +138,12 @@ $(document).ready(function () {
                         };
 
                         $ulPag.append($(`<li class="waves-effect"><a><i class="material-icons">chevron_right</i></a></li>`));
+
+                        $ulPag.find('li').not('li:first').not('li:last').each(function(index) {
+                            if(index > 8) {
+                                $(this).hide();
+                            }
+                        });
 
                         $ulPag.click(function (e) { 
                             onClick(e);

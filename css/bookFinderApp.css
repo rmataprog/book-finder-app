@@ -19,3 +19,10 @@ img.welcome {
 .spinner-layer {
     border-color: #6a1b9a;
 }
+
+ul.pagination {
+    display: block;
+    margin-left: auto;
+    width: fit-content;
+    margin-right: auto;
+}
