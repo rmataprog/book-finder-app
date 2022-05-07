@@ -56,11 +56,25 @@ $(document).ready(function () {
                     data.items.forEach((book) => {
                         var li_content = `<li>
                             <div class="collapsible-header">
-                                ${book.volumeInfo.title}
+                                <div class="row">
+                                    <div class="col s3 m2">
+                                        <img src="${book.volumeInfo.imageLinks === undefined ? '' : book.volumeInfo.imageLinks.smallThumbnail}" alt="No image">
+                                    </div>
+                                    <div class="col s8 offset-s1 m9 offset-m1">
+                                        <p>${book.volumeInfo.title}<br />
+                                            Authors: ${book.volumeInfo.authors === undefined || book.volumeInfo.authors.length === 0 ? 'No data' : book.volumeInfo.authors.reduce((acc, author, index) => { return index + 1 === book.volumeInfo.authors.length ? acc + author : acc + author + ', ' }, '')} <br />
+                                            Published date: ${book.volumeInfo.publishedDate === undefined ? '' : (new Date(book.volumeInfo.publishedDate)).toDateString()} <br />
+                                            Publisher: ${book.volumeInfo.publisher === undefined ? '' : book.volumeInfo.publisher}<br />
+                                            Categories: ${book.volumeInfo.categories === undefined || book.volumeInfo.categories.length === 0 ? 'No data' : book.volumeInfo.categories.reduce((acc, category, index) => { return index + 1 === book.volumeInfo.categories.length ? acc + category : acc + category + ', ' }, '')} <br />
+                                            Page count: ${book.volumeInfo.pageCount === undefined ? '' : book.volumeInfo.pageCount}<br />
+                                            ${book.volumeInfo.averageRating === undefined ? '' : book.volumeInfo.averageRating}<i class="material-icons">star</i> | ${book.volumeInfo.ratingsCount === undefined ? '' : book.volumeInfo.ratingsCount}<i class="material-icons">person</i>
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                             <div class="collapsible-body">
-                                <span>Published date: ${book.volumeInfo.publishedDate}</span><br />
-                                <span>Description: ${book.volumeInfo.description}</span>
+                                <span>Description: ${book.volumeInfo.description === undefined ? '' : book.volumeInfo.description}</span><br />
+                                <a class="right" href="${book.volumeInfo.previewLink === undefined ? '' : book.volumeInfo.previewLink}" target="_blank">Preview</a>
                             </div>
                             </li>`;
                         $li = $(li_content);
