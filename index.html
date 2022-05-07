@@ -11,24 +11,28 @@
 </head>
 <body>
     <div class="container">
-        <div class="section">
-            <h2 class="center-align">Book Finder App</h2>
-        </div>
+        <nav>
+            <div class="nav-wrapper indigo accent-4">
+                <a class="brand-logo center"><img src="img/book_logo.png"><span>Book Finder App</span></a>
+            </div>
+        </nav>
         <div class="section">
             <form>
                 <div class="row">
                     <div class="input-field">
+                        <i class="material-icons prefix">search</i>
                         <input type="text" id="search_value">
                         <label for="search_value"></label>
+                        <span class="helper-text" data-error="Please provide a term to search"></span>
                     </div>
                 </div>
                 <div class="row">
-                    <input class="btn purple darken-3" type="submit" id="search_button" value="Search Books">
+                    <input class="btn indigo accent-4" type="submit" id="search_button" value="Search Books">
                 </div>
             </form>
         </div>
         <div class="section">
-            <img src="img/research.png" class="welcome">
+            <img src="img/book.png" class="welcome">
             <div class="preloader-wrapper big active">
                 <div class="spinner-layer">
                   <div class="circle-clipper left">

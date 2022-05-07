@@ -11,14 +11,22 @@ $(document).ready(function () {
     
     $(".preloader-wrapper").hide();
 
+    $("#search_value").val('');
+
     $('form').on('submit', function (e) {
         e.preventDefault();
-        BOOK_APP.searchTerm = $(this).find('[type="text"]').val();
-        var input = {
-            query: BOOK_APP.searchTerm,
-            index: 0
-        };
-        builder(input);
+        if($("#search_value").val().length === 0) {
+            BOOK_APP.searchTerm = '';
+            $("#search_value").removeClass('valid').addClass('invalid');
+        } else {
+            BOOK_APP.searchTerm = $(this).find('[type="text"]').val();
+            $("#search_value").removeClass('invalid').addClass('valid');
+            var input = {
+                query: BOOK_APP.searchTerm,
+                index: 0
+            };
+            builder(input);
+        }
     });
 
     function builder(input) {
@@ -58,12 +66,41 @@ $(document).ready(function () {
                         $li = $(li_content);
                         $li.appendTo($ul);
                     });
-                    $ul.appendTo(`div.section:eq(2)`);
+                    $ul.appendTo(`div.section:eq(1)`);
                     var elems = document.querySelectorAll('.collapsible');
                     var instances = M.Collapsible.init(elems);
                     BOOK_APP.totalItems = input.index === 0 ? data.totalItems : BOOK_APP.totalItems;
                     BOOK_APP.pages = Math.ceil(BOOK_APP.totalItems/10);
                     if(input.index === 0) {
+
+                        $('ul.pagination').remove();
+
+                        $ulPag = $(`<ul class="pagination"></ul>`);
+
+                        $ulPag.append($(`<li class="disabled"><a><i class="material-icons">chevron_left</i></a></li>`));
+
+                        for(var i = 1; i <= BOOK_APP.pages; i++) {
+                            if(i === 1) {
+                                $ulPag.append($(`<li class="active"><a>${i}</a></li>`));
+                            } else {
+                                $ulPag.append($(`<li class="waves-effect"><a>${i}</a></li>`));
+                            }
+                        };
+
+                        $ulPag.append($(`<li class="waves-effect"><a><i class="material-icons">chevron_right</i></a></li>`));
+
+                        $ulPag.find('li').not('li:first').not('li:last').each(function(index) {
+                            if(index > 8) {
+                                $(this).hide();
+                            }
+                        });
+
+                        $ulPag.click(function (e) { 
+                            onClick(e);
+                        });
+
+                        $ulPag.appendTo(`div.section:last`);
+
                         var onClick = function(e) {
                             e.preventDefault();
                             var $target = $(e.target);
@@ -119,37 +156,17 @@ $(document).ready(function () {
                                     $('li.active').prev().prev().show();
                                     $('li.active').prev().prev().prev().show();
                                     $('li.active').prev().prev().prev().prev().show();
+                                } else if( parseInt($('li.active').text()) <= 5) {
+                                    $('ul.pagination li').not('li:first').not('li:last').each(function(index) {
+                                        if(index > 8) {
+                                            $(this).hide();
+                                        } else {
+                                            $(this).show();
+                                        }
+                                    });
                                 }
                             };
                         };
-
-                        $('ul.pagination').remove();
-
-                        $ulPag = $(`<ul class="pagination"></ul>`);
-
-                        $ulPag.append($(`<li class="disabled"><a><i class="material-icons">chevron_left</i></a></li>`));
-
-                        for(var i = 1; i <= BOOK_APP.pages; i++) {
-                            if(i === 1) {
-                                $ulPag.append($(`<li class="active"><a>${i}</a></li>`));
-                            } else {
-                                $ulPag.append($(`<li class="waves-effect"><a>${i}</a></li>`));
-                            }
-                        };
-
-                        $ulPag.append($(`<li class="waves-effect"><a><i class="material-icons">chevron_right</i></a></li>`));
-
-                        $ulPag.find('li').not('li:first').not('li:last').each(function(index) {
-                            if(index > 8) {
-                                $(this).hide();
-                            }
-                        });
-
-                        $ulPag.click(function (e) { 
-                            onClick(e);
-                        });
-
-                        $ulPag.appendTo(`div.section:last`);
                     }
                 } catch (e) {
                     console.log(`name: ${e.name} - message: ${e.message}`);
